@@ -1,0 +1,214 @@
+CREATE DATABASE IF NOT EXIST employee;
+
+USE employee;
+
+CREATE TABLE employee_info(
+	id INT PRIMARY KEY,
+	name VARCHAR(50),
+	salary INT,
+	city VARCHAR(20) DEFAULT "Mumbai"
+);
+
+INSERT INTO employee_info
+(id,name,salary)
+VALUES
+("1","Adam",25000),
+("2","Roshan",21000),
+("3","Bhoomika",28000);
+
+SELECT * FROM employee_info; //Display
+
+SHOW DATABASES; //display databases
+
+SHOW TABLES; //display Tables in a data base first use USE <DATABASE name>
+
+//UNIQUE NOT NULL
+CREATE TABLE temp(
+	id INT NOT NULL,
+	roll_no INT UNIQUE,
+	PRIMARY KEY (id)
+);
+
+//Foreign Key
+CREATE TABLE temp1(
+	cust_id INT,
+	salary INT DEFAULT 35000, //DEFAULT VALUE UNLESS SPECIFIED
+	FOREIGN KEY (cust_id) REFERENCES temp(id)
+	ON UPDATE CASCADE // to update the child table
+	ON DELETE CASCADE 
+);
+
+CREATE TABLE bank_acc(
+	id INT PRIMARY KEY,
+	age TINYINT,
+	CONSTRAINT age_check CHECK (age >= 18) // input only if greater than equal to 18  
+);
+
+SELECT col1,col2 FROM table_name; // to select specific columns from table
+
+SELECT * FROM bank_acc; // to select all columns from table
+SELECT name,salary FROM employee_info;
+
+SELECT * FROM employee_info WHERE salary > 24000; // display all columns data but only rows of values which has salary more than 24000
+
+SELECT name FROM employee_info WHERE city="Mumbai"; // display name col but only rows which have city = mumbai 
+
+LOGICAL OPERATORS 
+SELECT * FROM student WHERE marks > 80 AND city = "Mumbai";
+SELECT * FROM student WHERE marks > 80 OR city = "Mumbai";
+SELECT * FROM student WHERE marks BETWEEN 40 AND 70;
+SELECT * FROM student WHERE city IN ("Bangalore" , "Mumbai");
+SELECT * FROM student WHERE city NOT IN ("Bangalore" , "Mumbai");
+
+
+// LIMIT number of rows to be printed from the start
+SELECT * FROM student LIMIT 3;
+
+//Set ascending (ASC or DESC) order to rows
+SELECT * FROM student ORDER BY city ASC;
+
+// to return a single value based on criteria 
+SELECT max(marks) FROM student; // displays max marks from the column 
+SELECT count(marks) FROM student; 
+SELECT avg(marks) FROM student;
+SELECT min(marks) FROM student;
+SELECT sum(marks) FROM student;
+
+// group by clause
+SELECT city, count(name) FROM student GROUP BY city; // column city names unique and number of names in each city counts and displays 
+
+// having clause
+SELECT count(name), city FROM student GROUP BY city HAVING max(marks) >90 // count number of students in each city which have max marks from than 90
+
+// GENERAL ORDER OF SQL 
+SELECT col
+FROM table
+WHERE cond
+GROUP BY cols
+HAVING cond 
+ORDER BY cols ASC;
+
+// update existing data in rows
+UPDATE student 
+SET grade = "O"
+WHERE grade = "A";
+
+UPDATE employee_info
+SET salary = 50000
+WHERE id = 1;
+
+// to increment everyones salary , here no use of WHERE
+UPDATE employee_info
+SET salary = salary + 5000;
+
+// to remove safe mode from SQL 
+SET SQL_SAFE_UPDATES = 0;
+
+// to delete a row from table
+DELETE FROM employee_info
+WHERE id = 2;
+
+// to add a column to existing table
+ALTER TABLE table_name
+ADD COLUMN col_name;
+
+// to delete a column from existing table
+ALTER TABLE table_name
+DROP COLUMN col_name;
+
+// to rename the table
+ALTER TABLE table_name
+RENAME TO new_table_name;
+
+//to change the column name
+ALTER TABLE table_name
+MODIFY old_col_name new_col_name new_datatype new_constraint;
+
+//to modify existing column (data type or constraints)
+ALTER TABLE table_name
+MODIFY col_name new_datatype new_constraint;
+
+// to delete full table file 
+DROP TABLE table_name;
+//to delete all the data in the table  but keep the table file
+TRUNCATE TABLE table_name;
+
+
+// to join 2 tables
+
+//Inner join resulting table will have columns from both the tables and only the rows which have same ids 
+SELECT col	 	    // SELECT * FROM 
+FROM tableA as A	   //TableA is now represented as A
+INNER JOIN tableB as B     // TableB is now represented as B
+ON A.id = B.id ;          // id col matching in both the tables
+
+//LEFT JOIN resulting table will have columns from both tables but only rows id of left table, rows unique to right table will not be displayed
+SELECT col	 	    // SELECT * FROM 
+FROM tableA as A	   //TableA is now represented as A
+LEFT JOIN tableB as B     // TableB is now represented as B
+ON A.id = B.id ;          // id col matching in both the tables
+
+//Right JOIN resulting table will have columns from both tables but only rows id of right table, rows unique to left table will not be displayed
+SELECT col	 	    // SELECT * FROM 
+FROM tableA as A	   //TableA is now represented as A
+RIGHT JOIN tableB as B     // TableB is now represented as B
+ON A.id = B.id ;          // id col matching in both the tables
+
+//FULL JOIN // resulting table will have 2 separate id column
+SELECT * FROM tableA as a
+LEFT JOIN tableB as b
+ON a.id = b.id
+SELECT * FROM tableA as a
+RIGHT JOIN tableB as b
+ON a.id = b.id
+
+//Left Exclusive join
+SELECT * FROM tableA as a
+LEFT JOIN tableB as b
+ON a.id = b.id
+WHERE b.id IS NULL;
+
+//Left Exclusive join
+SELECT * FROM tableA as a
+RIGHT JOIN tableB as b
+ON a.id = b.id
+WHERE a.id IS NULL;
+
+//Employee table
+id   name   mng_id
+101  adam   103
+102  bob    104
+104  Donald 103
+
+//SELF JOIN to display only manager name and name
+SELECT a.name as manager_name, b.name  // tableA name col is renamed to manager name and only name will be displayed from both tables
+FROM tableA as A
+JOIN tableB as B
+ON a.id = b.mng_id;
+
+//UNION to combine both the tables and print unique values provided both select col should be of same data type and equal no of cols
+
+SELECT name from tableA
+UNION
+SELECT name FROM tableB
+
+// UNION ALL allows duplicate vals also
+SELECT name from tableA
+UNION ALL
+SELECT name FROM tableB
+
+SELECT name FROM student
+WHERE marks > (SELECT avg(Marks) FROM student); // () to find avg marks and compare
+
+SELECT name FROM student 
+WHERE rollno IN (SELECT rollno FROM student WHERE rollno % 2 = 0);
+
+CREATE VIEW view1 AS
+SELECT rollno,marks FROM student ;
+
+DROP VIEW view1;
+
+
+
+DROP DATABASE IF EXIST db_name;
+
